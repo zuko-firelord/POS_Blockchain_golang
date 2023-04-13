@@ -140,6 +140,21 @@ func (bc *Blockchain) mining() bool  {
 	return true
 }
 
+func (bc *Blockchain) calTotalAmt(blockchainAddress string)  float32 {
+	var totalAmount float32 = 0.0
+	for _,b := range bc.chain{
+		for _,t := range b.transactions{
+			value := t.value
+			if blockchainAddress == t.recipientBlockchainAddress{
+				totalAmount += value
+			}
+			if blockchainAddress == t.senderBlockchainAddress{
+				totalAmount -= value
+			}
+		}
+	}
+	return totalAmount
+}
 
 type Transaction struct {
 	senderBlockchainAddress    string
@@ -183,4 +198,9 @@ myblockchainadd := "my_blockchain_address"
 	blockchain.AddTransaction("c", "d", 2.0)
 	blockchain.mining()
 	blockchain.Print()
+
+	fmt.Printf("my %.1f\n", blockchain.calTotalAmt("my_blockchain_address") )
+	fmt.Printf("a %.1f\n", blockchain.calTotalAmt("a") )
+	fmt.Printf("c %.1f\n", blockchain.calTotalAmt("c") )
+	fmt.Printf("d %.1f\n", blockchain.calTotalAmt("d") )
 }
