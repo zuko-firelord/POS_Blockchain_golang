@@ -1,4 +1,4 @@
-package main
+package block
 
 import (
 	"crypto/sha256"
@@ -59,9 +59,7 @@ func (b *Block) MarshalJSON() ([]byte, error) {
 		Transactions: b.transactions,
 	})
 }
-func init() {
-	log.SetPrefix("Blockchain:  ")
-}
+
 
 type Blockchain struct {
 	transactonPool []*Transaction
@@ -185,22 +183,4 @@ func (t *Transaction) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func main() {
-myblockchainadd := "my_blockchain_address"
-	blockchain := NewBlockchain(myblockchainadd)
-	blockchain.Print()
 
-	blockchain.AddTransaction("a", "b", 1.0)
-	blockchain.mining()
-	blockchain.Print()
-
-	blockchain.AddTransaction("b", "c", 2.0)
-	blockchain.AddTransaction("c", "d", 2.0)
-	blockchain.mining()
-	blockchain.Print()
-
-	fmt.Printf("my %.1f\n", blockchain.calTotalAmt("my_blockchain_address") )
-	fmt.Printf("a %.1f\n", blockchain.calTotalAmt("a") )
-	fmt.Printf("c %.1f\n", blockchain.calTotalAmt("c") )
-	fmt.Printf("d %.1f\n", blockchain.calTotalAmt("d") )
-}
