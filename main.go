@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-
+	"github.com/zuko-firelord/POW_Blockchain_golang/wallet"
 )
+
 func init() {
 	log.SetPrefix("Blockchain:  ")
 }
