@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"github.com/zuko-firelord/POW_Blockchain_golang/wallet"
+
+
 )
 
 func init() {
@@ -14,4 +16,5 @@ func main() {
 	w := wallet.NewWallet()
 	fmt.Println(w.PrivateKeyStr())
 	fmt.Println(w.PublicKeyStr())
+	fmt.Println(w.BlockchainAddress())
 }
