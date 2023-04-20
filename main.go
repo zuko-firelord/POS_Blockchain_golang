@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+
+	"github.com/zuko-firelord/POW_Blockchain_golang/block"
 	"github.com/zuko-firelord/POW_Blockchain_golang/wallet"
-
-
 )
 
 func init() {
@@ -13,13 +13,13 @@ func init() {
 }
 
 func main() {
-	w := wallet.NewWallet()
-	fmt.Println(w.PrivateKeyStr())
-	fmt.Println(w.PublicKeyStr())
-	fmt.Println(w.BlockchainAddress())
-
-
+	wM := wallet.NewWallet()
+	wA := wallet.NewWallet()
+	wB := wallet.NewWallet()
 	//transaction
-	t := wallet.NewTransaction(w.PrivateKey(),w.PublicKey(),w.BlockchainAddress(),"B",1.0)
-	fmt.Printf("signature %s \n", t.GenerateSig())
+	t := wallet.NewTransaction(wA.PrivateKey(),wA.PublicKey(),wA.BlockchainAddress(),wB.BlockchainAddress(),1.0)
+
+	blockchain := block.NewBlockchain(wM.BlockchainAddress())
+	isadded := blockchain.AddTransaction(wA.BlockchainAddress(),wB.BlockchainAddress(),1.0,wA.PublicKey(),t.GenerateSig())
+	fmt.Println("Added?", isadded)
 }

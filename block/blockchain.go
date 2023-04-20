@@ -1,9 +1,11 @@
 package block
 
 import (
+	"crypto/ecdsa"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"github.com/zuko-firelord/POW_Blockchain_golang/utils"
 	"log"
 	"strings"
 	"time"
@@ -43,7 +45,6 @@ func (b *Block) Print() {
 func (b *Block) Hash() [32]byte {
 	m, _ := json.Marshal(b)
 	return sha256.Sum256([]byte(m))
-
 }
 
 func (b *Block) MarshalJSON() ([]byte, error) {
@@ -94,9 +95,37 @@ func (bc *Blockchain) Lastbloc() *Block {
 
 }
 
-func (bc *Blockchain) AddTransaction(sender string, recipient string, value float32) {
+func (bc *Blockchain) AddTransaction(sender string, recipient string, value float32,
+	senderPublicKey *ecdsa.PublicKey, s *utils.Signature) bool {
 	t := NewTransaction(sender, recipient, value)
-	bc.transactonPool = append(bc.transactonPool, t)
+
+	if sender == mining_sender {
+		bc.transactonPool = append(bc.transactonPool, t)
+		return true
+	}
+
+	if bc.VerifyTransactionSignature(senderPublicKey, s, t) {
+		/*
+			if bc.CalculateTotalAmount(sender) < value {
+				log.Println("ERROR: Not enough balance in a wallet")
+				return false
+			}
+		*/
+		bc.transactonPool = append(bc.transactonPool, t)
+		return true
+	} else {
+		log.Println("ERROR: Verify Transaction")
+	}
+	return false
+
+}
+
+
+func (bc *Blockchain) VerifyTransactionSignature(
+	senderPublicKey *ecdsa.PublicKey, s *utils.Signature, t *Transaction) bool {
+	m, _ := json.Marshal(t)
+	h := sha256.Sum256([]byte(m))
+	return ecdsa.Verify(senderPublicKey, h[:], s.R, s.S)
 }
 
 func (bc *Blockchain) CopyTransactionPool() []*Transaction {
@@ -130,7 +159,7 @@ func (bc *Blockchain) ProofOfWork() int  {
 }
 
 func (bc *Blockchain) mining() bool  {
-	bc.AddTransaction(mining_sender,bc.blockchainAddress,mining_reward)
+	bc.AddTransaction(mining_sender,bc.blockchainAddress,mining_reward,nil,nil)
 	nonce := bc.ProofOfWork()
 	previousHash := bc.Lastbloc().Hash()
 	bc.CreateBlock(nonce,previousHash)
