@@ -139,7 +139,7 @@ func (bc *Blockchain) CopyTransactionPool() []*Transaction {
 	return transactions
 }
 
-func (bc *Blockchain) validProof(nouce int, previousHash [32]byte, transactions []*Transaction, difficulty int) bool {
+func (bc *Blockchain) ValidProof(nouce int, previousHash [32]byte, transactions []*Transaction, difficulty int) bool {
 	zeros := strings.Repeat("0", difficulty)
 	guessBlock := Block{0, nouce, previousHash, transactions}
 	guessHashStr := fmt.Sprintf("%x", guessBlock.Hash())
@@ -152,13 +152,13 @@ func (bc *Blockchain) ProofOfWork() int  {
 	previousHash := bc.Lastbloc().Hash()
 
 	nouce := 0
-	for !bc.validProof(nouce, previousHash,transactions,mining_difficulty){
+	for !bc.ValidProof(nouce, previousHash,transactions,mining_difficulty){
 		nouce +=1
 	}
 	return nouce
 }
 
-func (bc *Blockchain) mining() bool  {
+func (bc *Blockchain) Mining() bool  {
 	bc.AddTransaction(mining_sender,bc.blockchainAddress,mining_reward,nil,nil)
 	nonce := bc.ProofOfWork()
 	previousHash := bc.Lastbloc().Hash()
@@ -167,7 +167,7 @@ func (bc *Blockchain) mining() bool  {
 	return true
 }
 
-func (bc *Blockchain) calTotalAmt(blockchainAddress string)  float32 {
+func (bc *Blockchain) CalTotalAmt(blockchainAddress string)  float32 {
 	var totalAmount float32 = 0.0
 	for _,b := range bc.chain{
 		for _,t := range b.transactions{
